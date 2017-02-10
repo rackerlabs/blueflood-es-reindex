@@ -54,103 +54,103 @@ into a file while running for future reference.
 # Steps to follow
 
 1. Create the new index. The project comes with couple of commands. Run one of
-the below scripts. 
-   
-| new index choices    | create index scripts               |
-| ---------------------|:----------------------------------:|
-| extra_paths          | scripts/init_index_extra_paths.sh  |
-| extra_paths2         | scripts/init_index_extra_paths2.sh  |
-| parent_child         | scripts/init_index_parent_child.sh |
+   the below scripts.
+    
+    | new index choices    | create index scripts               |
+    | ---------------------|:----------------------------------:|
+    | extra_paths          | scripts/init_index_extra_paths.sh  |
+    | extra_paths2         | scripts/init_index_extra_paths2.sh |
+    | parent_child         | scripts/init_index_parent_child.sh |
 
-*Note: This scripts will wipe out the index if already exists.*
+    *Note: This scripts will wipe out the index if already exists.*
 
 2. Once the indexes are created, make sure the cluster health and index health 
-are green
+   are green
    
 3. Before we start re-indexing run the below command which will help speedup bulk indexing
    
-```bash   
-   --disabling refresh. Documents will not be visible until you enable refresh. 
-   curl -XPUT localhost:9200/<new index>/_settings -d '{
-        "index" : {
-            "refresh_interval" : "-1"
-        } 
-   }'
-```
+    ```bash   
+       --disabling refresh. Documents will not be visible until you enable refresh. 
+       curl -XPUT localhost:9200/<new index>/_settings -d '{
+            "index" : {
+                "refresh_interval" : "-1"
+            } 
+       }'
+    ```
    
-```bash
-   --disable replicas
-   curl -XPUT 'http://localhost:9200/<new index>/_settings' -d '{
-        "number_of_replicas": 0
-   }'
-```
+    ```bash
+       --disable replicas
+       curl -XPUT 'http://localhost:9200/<new index>/_settings' -d '{
+            "number_of_replicas": 0
+       }'
+    ```
    
 4. (Optional) Run the below command to check the counts before re-indexing.   
 
-```bash
-python esreindex/reindex.py --hosts  <ip1>:9200,<ip2>:9200 --current-index metric_metadata_v2 --dryrun
-```
+    ```bash
+    python esreindex/reindex.py --hosts  <ip1>:9200,<ip2>:9200 --current-index metric_metadata_v2 --dryrun
+    ```
 
 5. Make sure to adjust values like timeout, size. Take a look at step six before 
-proceeding with this one. If you want to reindex all the documents present in 
-metric_metadata index run the below command.
+   proceeding with this one. If you want to reindex all the documents present in 
+   metric_metadata index run the below command.
 
-```bash
-python esreindex/reindex.py --hosts <ip1>:9200,<ip2>:9200 --current-index metric_metadata  --scroll-timeout 10m --size 100 --new-index <new index name> --new-index-type <new index type> --transform <extra_paths|parent_child>  &> result.out
-```
-* <new index type> is "metrics" for extra_paths and "tokens" for <parent_child>*
+    ```bash
+    python esreindex/reindex.py --hosts <ip1>:9200,<ip2>:9200 --current-index metric_metadata  --scroll-timeout 10m --size 100 --new-index <new index name> --new-index-type <new index type> --transform <extra_paths|extra_paths2|parent_child>  &> result.out
+    ```
+   *<new index type> is "metrics" for extra_paths and "tokens" for <parent_child>*
 
 6. If you want to re-index tenant by tenant, use the below command
+    
+    ```bash
+    python reindex.py --hosts <ip1>:9200,<ip2>:9200 --current-index metric_metadata  --scroll-timeout 10m --size 100 --new-index <new index name> --new-index-type <new index type> --transform <extra_paths|extra_paths2|parent_child> --tenantIds <id1>,<id2>  &> result.out 
+    ```
 
-```bash
-python reindex.py --hosts <ip1>:9200,<ip2>:9200 --current-index metric_metadata  --scroll-timeout 10m --size 100 --new-index <new index name> --new-index-type <new index type> --transform <extra_paths|parent_child> --tenantIds <id1>,<id2>  &> result.out 
-```
-
-* <new index type> is "metrics" for extra_paths and "tokens" for <parent_child>*
+    *<new index type> is "metrics" for extra_paths and "tokens" for <parent_child>*
 
 7. Once the re-index is completed, make sure the cluster health and index health 
-are green
+   are green
 
-```bash
-curl -XGET 'http://localhost:9200/_cat/indices?v' | grep metadata
-curl -XGET http://localhost:9200/_cluster/health?pretty
-```   
+    ```bash
+    curl -XGET 'http://localhost:9200/_cat/indices?v' | grep metadata
+    curl -XGET http://localhost:9200/_cluster/health?pretty
+    ```   
    
 8. After all re-indexing is complete, run the below commands to make the reindex 
-documents visible.
+   documents visible.
 
-```bash
---default value of refresh interval is 1s. If your cluster has a different value set that amount.
-curl -XPUT localhost:9200/<new index>/_settings -d '{
-    "index" : {
-        "refresh_interval" : "1s"
-    } 
-}'
-```
+    ```bash
+    --default value of refresh interval is 1s. If your cluster has a different value set that amount.
+    curl -XPUT localhost:9200/<new index>/_settings -d '{
+        "index" : {
+            "refresh_interval" : "1s"
+        } 
+    }'
+    ```
 
 9. Get counts by tenantid in the new index and compare with the initial data.
  
-```bash
-curl -XGET 'http://localhost:9200/<new index name>/_search?search_type=count&pretty' -d '{
-    "aggs": {
-          "tenantId": {
-              "terms": {
-                  "field" : "_routing",
-                  "size": 0
+    ```bash
+    curl -XGET 'http://localhost:9200/<new index name>/_search?search_type=count&pretty' -d '{
+        "aggs": {
+              "tenantId": {
+                  "terms": {
+                      "field" : "_routing",
+                      "size": 0
+                  }
               }
-          }
-    }
-}'
-```
+        }
+    }'
+    ```
 
 10. After all the documents become visible (by verifying counts from previous step),
-run the below command to turn on replication
+    run the below command to turn on replication
 
-```bash
-curl -XPUT 'http://localhost:9200/<new index>/_settings' -d '{
-    "number_of_replicas": 2
-}'
-```
+    ```bash
+    curl -XPUT 'http://localhost:9200/<new index>/_settings' -d '{
+        "number_of_replicas": 2
+    }'
+    ```
  
 
 # Useful links
