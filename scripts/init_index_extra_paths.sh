@@ -2,22 +2,22 @@ DEFAULT_WAIT_PERIOD="10s"
 WAIT_PERIOD=${1:-$DEFAULT_WAIT_PERIOD}
 
 echo "**** Creating index with extra paths ****"
-curl -XDELETE 'http://localhost:9200/metric_metadata_with_paths'
+curl -XDELETE 'http://localhost:9200/metric_metadata_extra_paths'
 
 echo "Waiting ${WAIT_PERIOD}..."
 sleep ${WAIT_PERIOD}
 
-curl -XPUT 'http://localhost:9200/metric_metadata_with_paths'
+curl -XPUT 'http://localhost:9200/metric_metadata_extra_paths'
 
 echo "Waiting ${WAIT_PERIOD}..."
 sleep ${WAIT_PERIOD}
 
-curl -XPOST 'http://localhost:9200/metric_metadata_with_paths/_close'
+curl -XPOST 'http://localhost:9200/metric_metadata_extra_paths/_close'
 
 echo "Waiting ${WAIT_PERIOD}..."
 sleep ${WAIT_PERIOD}
 
-curl -XPUT 'http://localhost:9200/metric_metadata_with_paths/_settings' -d'{
+curl -XPUT 'http://localhost:9200/metric_metadata_extra_paths/_settings' -d'{
     "index": {
         "store" : {
             "preload": ["nvd", "dvd", "tim", "doc", "dim"]
@@ -51,12 +51,12 @@ curl -XPUT 'http://localhost:9200/metric_metadata_with_paths/_settings' -d'{
 echo "Waiting ${WAIT_PERIOD}..."
 sleep ${WAIT_PERIOD}
 
-curl -XPOST 'http://localhost:9200/metric_metadata_with_paths/_open'
+curl -XPOST 'http://localhost:9200/metric_metadata_extra_paths/_open'
 
 echo "Waiting ${WAIT_PERIOD}..."
 sleep ${WAIT_PERIOD}
 
-curl -XPOST 'http://localhost:9200/metric_metadata_with_paths/_mapping/metrics' -d '{
+curl -XPOST 'http://localhost:9200/metric_metadata_extra_paths/_mapping/metrics' -d '{
     "metrics": {
         "_routing": {
             "required": true

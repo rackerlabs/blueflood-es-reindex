@@ -59,6 +59,7 @@ the below scripts.
 | new index choices    | create index scripts               |
 | ---------------------|:----------------------------------:|
 | extra_paths          | scripts/init_index_extra_paths.sh  |
+| extra_paths2         | scripts/init_index_extra_paths2.sh  |
 | parent_child         | scripts/init_index_parent_child.sh |
 
 *Note: This scripts will wipe out the index if already exists.*
@@ -70,7 +71,7 @@ are green
    
 ```bash   
    --disabling refresh. Documents will not be visible until you enable refresh. 
-   curl -XPUT localhost:9200/metric_metadata_with_paths/_settings -d '{
+   curl -XPUT localhost:9200/<new index>/_settings -d '{
         "index" : {
             "refresh_interval" : "-1"
         } 
@@ -79,7 +80,7 @@ are green
    
 ```bash
    --disable replicas
-   curl -XPUT 'http://localhost:9200/metric_metadata_with_paths/_settings' -d '{
+   curl -XPUT 'http://localhost:9200/<new index>/_settings' -d '{
         "number_of_replicas": 0
    }'
 ```
@@ -120,7 +121,7 @@ documents visible.
 
 ```bash
 --default value of refresh interval is 1s. If your cluster has a different value set that amount.
-curl -XPUT localhost:9200/metric_metadata_with_paths/_settings -d '{
+curl -XPUT localhost:9200/<new index>/_settings -d '{
     "index" : {
         "refresh_interval" : "1s"
     } 
@@ -130,7 +131,6 @@ curl -XPUT localhost:9200/metric_metadata_with_paths/_settings -d '{
 9. Get counts by tenantid in the new index and compare with the initial data.
  
 ```bash
---for extra_paths type
 curl -XGET 'http://localhost:9200/<new index name>/_search?search_type=count&pretty' -d '{
     "aggs": {
           "tenantId": {
@@ -147,7 +147,7 @@ curl -XGET 'http://localhost:9200/<new index name>/_search?search_type=count&pre
 run the below command to turn on replication
 
 ```bash
-curl -XPUT 'http://localhost:9200/metric_metadata_with_paths/_settings' -d '{
+curl -XPUT 'http://localhost:9200/<new index>/_settings' -d '{
     "number_of_replicas": 2
 }'
 ```
