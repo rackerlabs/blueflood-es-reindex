@@ -57,7 +57,7 @@ into a file while running for future reference.
    the below scripts.
     
     | new index choices    | create index scripts               |
-    | ---------------------|:----------------------------------:|
+    | ---------------------|:-----------------------------------|
     | extra_paths          | scripts/init_index_extra_paths.sh  |
     | extra_paths2         | scripts/init_index_extra_paths2.sh |
     | parent_child         | scripts/init_index_parent_child.sh |
@@ -98,7 +98,7 @@ into a file while running for future reference.
     ```bash
     python esreindex/reindex.py --hosts <ip1>:9200,<ip2>:9200 --current-index metric_metadata  --scroll-timeout 10m --size 100 --new-index <new index name> --new-index-type <new index type> --transform <extra_paths|extra_paths2|parent_child>  &> result.out
     ```
-   *<new index type> is "metrics" for extra_paths and "tokens" for <parent_child>*
+   *"new index type" is "metrics" for extra_paths and "tokens" for <parent_child>*
 
 6. If you want to re-index tenant by tenant, use the below command
     
@@ -106,7 +106,7 @@ into a file while running for future reference.
     python reindex.py --hosts <ip1>:9200,<ip2>:9200 --current-index metric_metadata  --scroll-timeout 10m --size 100 --new-index <new index name> --new-index-type <new index type> --transform <extra_paths|extra_paths2|parent_child> --tenantIds <id1>,<id2>  &> result.out 
     ```
 
-    *<new index type> is "metrics" for extra_paths and "tokens" for <parent_child>*
+    *"new index type" is "metrics" for extra_paths and "tokens" for <parent_child>*
 
 7. Once the re-index is completed, make sure the cluster health and index health 
    are green
