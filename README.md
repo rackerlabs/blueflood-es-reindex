@@ -155,5 +155,5 @@ into a file while running for future reference.
 
 # Useful links
 
-[https://www.elastic.co/guide/en/elasticsearch/guide/1.x/scan-scroll.html](https://www.elastic.co/guide/en/elasticsearch/guide/1.x/scan-scroll.html)
-[http://elasticsearch-py.readthedocs.io/en/master/helpers.html](http://elasticsearch-py.readthedocs.io/en/master/helpers.html)
+* [https://www.elastic.co/guide/en/elasticsearch/guide/1.x/scan-scroll.html](https://www.elastic.co/guide/en/elasticsearch/guide/1.x/scan-scroll.html)
+* [http://elasticsearch-py.readthedocs.io/en/master/helpers.html](http://elasticsearch-py.readthedocs.io/en/master/helpers.html)
