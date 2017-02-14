@@ -63,7 +63,7 @@ def count_index(es_client, index_name, index_type, tenant_ids):
         else:
             tenant_id_infos.append((bucket['key'], bucket['doc_count']))
 
-    print "\n{0} Total Number of documents is {1}".format(
+    print "\n[{0}] Total Number of documents is {1}".format(
         index_name, count_response['hits']['total'])
 
     print "\n[{}] Doc counts by tenant Id...\n".format(index_name)
