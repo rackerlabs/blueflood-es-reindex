@@ -75,7 +75,8 @@ def parent_child(old_doc_id, new_index, new_index_type):
             new_doc = {}
             level += 1
     else:
-        print "Invalid document id %s for tenant %s" % (old_doc_id, tenant_id)
+        print "Invalid document id {0} for tenant {1}".format(old_doc_id,
+                                                              tenant_id)
         return []
 
     return actions
@@ -158,7 +159,8 @@ def extra_paths2(old_doc_id, new_index, new_index_type):
         new_doc['metric_name'] = metric_name
 
     else:
-        print "Invalid document id %s for tenant %s" % (old_doc_id, tenant_id)
+        print "Invalid document id {0} for tenant {1}".format(old_doc_id,
+                                                              tenant_id)
         return []
 
     action = {
@@ -216,9 +218,14 @@ class ESClient:
 
         scroll_id = scroll_result['_scroll_id']
 
-        possibles = globals().copy()
-        possibles.update(locals())
-        transform_method = possibles.get(transform)
+        transform_methods = {
+            'parent_child': parent_child,
+            'extra_paths': extra_paths,
+            'extra_paths2': extra_paths2,
+            'no_transform': no_transform
+        }
+        transform_method = transform_methods[transform]
+
         if not transform_method:
             raise NotImplementedError("Method %s not implemented" % transform)
 
@@ -234,7 +241,9 @@ class ESClient:
                     helpers.parallel_bulk(self.es, actions=actions,
                                           thread_count=bulk_thread_count,
                                           chunk_size=bulk_size):
-                if count % bulk_size == 0: sys.stdout.write(' %d ..' % count)
+                if count % bulk_size == 0:
+                    sys.stdout.write(' %d ..' % count)
+
                 count += 1
                 if not success:
                     print('Bulk insert failed', info)
@@ -259,4 +268,3 @@ class ESClient:
         except ScanError:
             print "Exception during scrolling"
             raise
-
