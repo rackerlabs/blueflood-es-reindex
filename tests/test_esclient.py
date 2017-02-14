@@ -87,29 +87,29 @@ def test_parent_child_generated_1():
 
     assert actions[0]['_id'] == tenant_id + ":" + "a"
     assert actions[0]['_source']['token'] == "a"
-    assert actions[0]['_source']['is_leaf'] == False
+    assert not actions[0]['_source']['is_leaf']
     assert actions[0]['_source']['parent'] == tenant_id + ":"
 
     assert actions[1]['_id'] == tenant_id + ":" + "a.b"
     assert actions[1]['_source']['token'] == "b"
-    assert actions[1]['_source']['is_leaf'] == False
+    assert not actions[1]['_source']['is_leaf']
     assert actions[1]['_source']['parent'] == tenant_id + ":" + "a"
 
     assert actions[2]['_id'] == tenant_id + ":" + "a.b.c"
     assert actions[2]['_source']['token'] == "c"
-    assert actions[2]['_source']['is_leaf'] == False
+    assert not actions[2]['_source']['is_leaf']
     assert actions[2]['_source']['parent'] == tenant_id + ":" + "a.b"
 
     assert actions[3]['_id'] == tenant_id + ":" + "a.b.c.d:$"
     assert actions[3]['_source']['token'] == "d"
-    assert actions[3]['_source']['is_leaf'] == True
+    assert actions[3]['_source']['is_leaf']
     assert actions[3]['_source']['parent'] == tenant_id + ":" + "a.b.c"
 
 
 def test_parent_child_generated_2():
     actions = es.parent_child('1234:a', 'new_index', 'new_type')
     assert actions[0]['_source']['token'] == 'a'
-    assert actions[0]['_source']['is_leaf'] == True
+    assert actions[0]['_source']['is_leaf']
     assert actions[0]['_source']['parent'] == '1234:'
 
 
