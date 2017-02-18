@@ -56,11 +56,11 @@ into a file while running for future reference.
 1. Create the new index. The project comes with couple of commands. Run one of
    the below scripts.
     
-    | new index choices    | create index scripts               |
-    | ---------------------|:-----------------------------------|
-    | extra_paths          | scripts/init_index_extra_paths.sh  |
-    | extra_paths2         | scripts/init_index_extra_paths2.sh |
-    | parent_child         | scripts/init_index_parent_child.sh |
+    | new index choices    | create index scripts                |
+    | ---------------------|:------------------------------------|
+    | extra_paths          | scripts/init_index_extra_paths.sh   |
+    | extra_paths2         | scripts/init_index_extra_paths2.sh  |
+    | metric_tokens        | scripts/init_index_metric_tokens.sh |
 
     *Note: This scripts will wipe out the index if already exists.*
 

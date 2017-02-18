@@ -28,7 +28,7 @@ def no_transform(old_doc_id, new_index, new_index_type):
     return [action]
 
 
-def parent_child(old_doc_id, new_index, new_index_type):
+def metric_tokens(old_doc_id, new_index, new_index_type):
     """
     Transformation logic used to transform the source when called with
     parent_child and returns ES actions for bulk indexing.
@@ -42,12 +42,12 @@ def parent_child(old_doc_id, new_index, new_index_type):
         tokens = metric_name.split('.')
 
         level = 0
-        path = ""
+        current_path = ""
         for token in tokens:
             if level == 0:
-                path = token
+                current_path = token
             else:
-                path = path + "." + token
+                current_path = current_path + "." + token
 
             action = {
                 "_index": new_index,
@@ -55,19 +55,20 @@ def parent_child(old_doc_id, new_index, new_index_type):
                 "_routing": tenant_id,
             }
 
+            new_doc['tenantId'] = tenant_id
             if level == len(tokens) - 1:
-                action['_id'] = tenant_id + ":" + path + ":$"
-                new_doc['is_leaf'] = True
+                action['_id'] = tenant_id + ":" + current_path + ":$"
+                new_doc['isLeaf'] = True
             else:
-                action['_id'] = tenant_id + ":" + path
-                new_doc['is_leaf'] = False
+                action['_id'] = tenant_id + ":" + current_path
+                new_doc['isLeaf'] = False
 
             new_doc['token'] = token
             if level == 0:
-                new_doc['parent'] = tenant_id + ":"
+                new_doc['path'] = ""
             else:
-                (parent, token) = action['_id'].rsplit('.', 1)
-                new_doc['parent'] = parent
+                (path, token) = current_path.rsplit('.', 1)
+                new_doc['path'] = path
 
             action["_source"] = new_doc
             actions.append(action)
@@ -219,7 +220,7 @@ class ESClient:
         scroll_id = scroll_result['_scroll_id']
 
         transform_methods = {
-            'parent_child': parent_child,
+            'metric_tokens': metric_tokens,
             'extra_paths': extra_paths,
             'extra_paths2': extra_paths2,
             'no_transform': no_transform

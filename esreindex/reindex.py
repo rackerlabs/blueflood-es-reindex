@@ -10,7 +10,7 @@ DEFAULT_CURRENT_INDEX = 'metric_metadata'
 DEFAULT_THREAD_COUNT = 20
 DEFAULT_BULK_SIZE = 500
 
-TRANSFORMATION_CHOICES = ['parent_child', 'extra_paths', 'extra_paths2',
+TRANSFORMATION_CHOICES = ['metric_tokens', 'extra_paths', 'extra_paths2',
                           'no_transform']
 
 
