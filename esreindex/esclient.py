@@ -65,10 +65,10 @@ def metric_tokens(old_doc_id, new_index, new_index_type):
 
             new_doc['token'] = token
             if level == 0:
-                new_doc['path'] = ""
+                new_doc['parent'] = ""
             else:
-                (path, token) = current_path.rsplit('.', 1)
-                new_doc['path'] = path
+                (parent, token) = current_path.rsplit('.', 1)
+                new_doc['parent'] = parent
 
             action["_source"] = new_doc
             actions.append(action)

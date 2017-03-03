@@ -78,7 +78,7 @@ def test_parent_child_generated_1():
     old_id = tenant_id + ":" + metric_name
     new_index = 'new_index'
     new_type = 'type'
-    actions = es.parent_child(old_id, new_index, new_type)
+    actions = es.metric_tokens(old_id, new_index, new_type)
     print actions
 
     assert actions[0]['_index'] == new_index
@@ -88,31 +88,31 @@ def test_parent_child_generated_1():
     assert actions[0]['_id'] == tenant_id + ":" + "a"
     assert actions[0]['_source']['token'] == "a"
     assert not actions[0]['_source']['isLeaf']
-    assert actions[0]['_source']['path'] == ""
+    assert actions[0]['_source']['parent'] == ""
 
     assert actions[1]['_id'] == tenant_id + ":" + "a.b"
     assert actions[1]['_source']['token'] == "b"
     assert not actions[1]['_source']['isLeaf']
-    assert actions[1]['_source']['path'] == "a"
+    assert actions[1]['_source']['parent'] == "a"
 
     assert actions[2]['_id'] == tenant_id + ":" + "a.b.c"
     assert actions[2]['_source']['token'] == "c"
     assert not actions[2]['_source']['isLeaf']
-    assert actions[2]['_source']['path'] == "a.b"
+    assert actions[2]['_source']['parent'] == "a.b"
 
     assert actions[3]['_id'] == tenant_id + ":" + "a.b.c.d:$"
     assert actions[3]['_source']['token'] == "d"
     assert actions[3]['_source']['isLeaf']
-    assert actions[3]['_source']['path'] == "a.b.c"
+    assert actions[3]['_source']['parent'] == "a.b.c"
 
 
 def test_parent_child_generated_2():
-    actions = es.parent_child('1234:a', 'new_index', 'new_type')
+    actions = es.metric_tokens('1234:a', 'new_index', 'new_type')
     assert actions[0]['_source']['token'] == 'a'
     assert actions[0]['_source']['isLeaf']
-    assert actions[0]['_source']['path'] == ''
+    assert actions[0]['_source']['parent'] == ''
 
 
 def test_parent_child_generated_3():
-    actions = es.parent_child('1234:', 'new_index', 'new_type')
+    actions = es.metric_tokens('1234:', 'new_index', 'new_type')
     assert len(actions) == 0

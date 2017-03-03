@@ -29,7 +29,7 @@ curl -XPOST 'http://localhost:9200/metric_tokens/_mapping/tokens' -d '{
                 "index": "not_analyzed",
                 "doc_values": true
             },
-            "path": {
+            "parent": {
                 "type": "string",
                 "index": "not_analyzed",
                 "doc_values": true
