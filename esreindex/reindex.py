@@ -42,6 +42,8 @@ def parse_args(args):
                         type=int, help="Number of bulk requests in parallel")
     parser.add_argument('--bulk-size', default=DEFAULT_BULK_SIZE, type=int,
                         help="Number of documents in one bulk request")
+    parser.add_argument('--tenantIdFile', type=str,
+                        help="TenantId's that need to be re-indexed")
 
     return parser.parse_args(args)
 
@@ -82,25 +84,32 @@ def main():
     print "\nVerifying counts..."
 
     tenant_ids = []
+
+    if config.tenantIdFile:
+        with open(config.tenantIdFile) as f:
+            tenant_ids = [x.strip() for x in f.readlines()]
+
     if config.tenantIds:
         tenant_ids = config.tenantIds.split(',')
+
+    print "\nProcessing {0} tenantIds...".format(len(tenant_ids))
 
     tenant_id_infos = count_index(es_client, config.current_index, "metrics",
                                   tenant_ids)
 
     if not config.dryrun:
         print "\nReindexing..."
-        for tenantId in tenant_id_infos:
+        for tenantId in tenant_ids:
             print "\n***** Re-indexing tenantId: {0} started at: {1}".format(
-                tenantId[0], datetime.datetime.now())
-            es_client.reindex(tenantId[0], config.current_index,
+                tenantId, datetime.datetime.now())
+            es_client.reindex(tenantId, config.current_index,
                               config.new_index,
                               config.new_index_type, config.scroll_timeout,
                               config.size, config.transform,
                               config.bulk_thread_count,
                               config.bulk_size)
             print "***** Re-indexing tenantId: {0} ended at  : {1}".format(
-                tenantId[0], datetime.datetime.now())
+                tenantId, datetime.datetime.now())
 
             # count_index(es_client, config.new_index, config.new_index_type, tenant_ids)
 

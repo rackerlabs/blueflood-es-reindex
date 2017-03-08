@@ -259,13 +259,18 @@ class ESClient:
         try:
             scroll_result = self.es.scroll(scroll_id, scroll=timeout)
 
+            action_cache = {}
             while len(scroll_result['hits']['hits']) > 0:
                 for item in scroll_result['hits']['hits']:
                     for action in f(item['_id'], new_index, new_index_type):
-                        yield action
+                        action_cache[action['_id']] = action
+
+                for action in action_cache.values():
+                    yield action
 
                 scroll_id = scroll_result['_scroll_id']
                 scroll_result = self.es.scroll(scroll_id, scroll=timeout)
+                action_cache = {}
         except ScanError:
             print "Exception during scrolling"
             raise
